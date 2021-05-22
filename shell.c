@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <pwd.h>
 
 #define MAX_LEN_LINE    100
 #define LEN_HOSTNAME	30
@@ -29,7 +30,7 @@ int main(void)
     int ret, status;
     pid_t pid, cpid;
     
-    gethostusername()
+    gethostusername();
     
     while (true) {
         char *s;
