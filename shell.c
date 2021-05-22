@@ -7,6 +7,20 @@
 #include <sys/wait.h>
 
 #define MAX_LEN_LINE    100
+#define LEN_HOSTNAME	30
+
+int gethostusername(void)
+{
+    char hostname[LEN_HOSTNAME + 1];
+    memset(hostname, 0x00, sizeof(hostname));
+    printf("username: %s\n", getpwuid(getuid())->pw_name);
+
+    gethostname(hostname, LEN_HOSTNAME);
+    printf("hostname: %s\n", hostname);
+
+    return 0;
+}
+
 
 int main(void)
 {
@@ -14,6 +28,8 @@ int main(void)
     char *args[] = {command, NULL};
     int ret, status;
     pid_t pid, cpid;
+    
+    gethostusername()
     
     while (true) {
         char *s;
