@@ -1,12 +1,25 @@
-#include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <pwd.h>
 
 #define MAX_LEN_LINE    100
+#define LEN_HOSTNAME	30
+
+int gethostusername(void)
+{
+    char hostname[LEN_HOSTNAME + 1];
+    memset(hostname, 0x00, sizeof(hostname));
+    printf("username: %s\n", getpwuid(getuid())->pw_name);
+
+    gethostname(hostname, LEN_HOSTNAME);
+    printf("hostname: %s\n", hostname);
+
+    return 0;
+}
 
 int main(void)
 {
@@ -33,8 +46,7 @@ int main(void)
         }
         
         printf("[%s]\n", command);
-      
-        pid = fork();
+             pid = fork();
         if (pid < 0) {
             fprintf(stderr, "fork failed\n");
             exit(1);
