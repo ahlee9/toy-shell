@@ -5,11 +5,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <pwd.h>
+#include <stdio.h>
 
 #define MAX_LEN_LINE    100
 #define LEN_HOSTNAME	30
 
-int gethostusername(void)
+int getprompt(void)
 {
     char hostname[LEN_HOSTNAME + 1];
     memset(hostname, 0x00, sizeof(hostname));
@@ -18,21 +19,22 @@ int gethostusername(void)
     gethostname(hostname, LEN_HOSTNAME);
     printf("hostname: %s\n", hostname);
 
+    char cwd[1000];
+    getcwd(cwd, sizeof(cwd));
+    printf("cwd: %s\n", cwd);
+
     return 0;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 17d1ea640b3a4334b8d493e9213fb8bdc8aa97bb
 
 int main(void)
 {
     char command[MAX_LEN_LINE];
-    char *args[] = {command, NULL};
+    char *arg;
+    char *args[] = {command, arg, NULL};
     int ret, status;
     pid_t pid, cpid;
     
-    gethostusername();
+    getprompt();
     
     while (true) {
         char *s;
@@ -40,11 +42,13 @@ int main(void)
         
         printf("MyShell $ ");
         s = fgets(command, MAX_LEN_LINE, stdin);
-        if (s == NULL) {
+       
+       	if (s == NULL) {
             fprintf(stderr, "fgets failed\n");
             exit(1);
         }
-        
+       
+
         len = strlen(command);
         printf("%d\n", len);
         if (command[len - 1] == '\n') {
@@ -52,7 +56,32 @@ int main(void)
         }
         
         printf("[%s]\n", command);
-             pid = fork();
+
+	// 'exit' command
+	if (strcmp(command, "exit") == 0) {
+		printf("%c[1;35m", 27);
+		printf("\nExit program\n");
+		printf("%c[0m\n", 27);
+		break;
+	}
+
+	// 'clear' command
+	if (strcmp(command, "clear") == 0) {
+		printf("\e[1;1H\e[2J");
+	}
+
+	// 'cd' command
+	if (strcmp(command, "cd") == 0) {	
+	     chdir("..");
+	     printf("%c[1;35m", 27);
+	     printf("%s\n", getcwd(s, 100));
+	     printf("%c[0m\n", 27);
+	}
+
+	arg = strtok(command, " ");
+
+
+        pid = fork();
         if (pid < 0) {
             fprintf(stderr, "fork failed\n");
             exit(1);
@@ -68,8 +97,24 @@ int main(void)
             }
         }
         else {  /* child */
+
+	    // 'pwd' command
+	    if (strcmp(command, "pwd") == 0) {
+		    arg = strtok(NULL, " ");
+		    args[0] = "/bin/pwd";
+		    args[1] = arg;
+	    }
+
+	    //'ls' command
+	    else if (strcmp(command, "ls") == 0) {
+		    arg = strtok(NULL, " ");
+		    args[0] = "/bin/ls";
+		    args[1] = arg;
+	    }
+
             ret = execve(args[0], args, NULL);
             if (ret < 0) {
+
                 fprintf(stderr, "execve failed\n");   
                 return 1;
             }
