@@ -20,6 +20,10 @@ int gethostusername(void)
 
     return 0;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 17d1ea640b3a4334b8d493e9213fb8bdc8aa97bb
 
 int main(void)
 {
@@ -27,6 +31,8 @@ int main(void)
     char *args[] = {command, NULL};
     int ret, status;
     pid_t pid, cpid;
+    
+    gethostusername();
     
     while (true) {
         char *s;
